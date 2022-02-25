@@ -1,4 +1,5 @@
 import csv
+import json
 import xml.etree.ElementTree as ET
 from inventory_report.reports.simple_report import SimpleReport
 from inventory_report.reports.complete_report import CompleteReport
@@ -16,6 +17,8 @@ class Inventory:
             return CsvReport(path, reportType).read_csv()
         elif file_type == 'xml':
             return XmlReport(path, reportType).read_xml()
+        elif file_type == 'json':
+            return JsonReport(path, reportType).read_json()
 
 
 class CsvReport():
@@ -32,6 +35,22 @@ class CsvReport():
                 return SimpleReport.generate(csv_dict_list)
 
         return CompleteReport.generate(csv_dict_list)
+
+
+class JsonReport():
+    def __init__(self, path, reportType):
+        self.path = path
+        self.reportType = reportType
+
+    def read_json(self):
+        with open(self.path) as reportJSON:
+            report_reader = reportJSON.read()
+
+            json_dict_list = json.loads(report_reader)
+            if self.reportType == SIMPLE:
+                return SimpleReport.generate(json_dict_list)
+
+            return CompleteReport.generate(json_dict_list)
 
 
 class XmlReport():
